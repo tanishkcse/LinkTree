@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+
 const Home = () => {
     const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,7 +31,7 @@ const Home = () => {
 
     const fetchProfile = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/profile', {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/profile`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
             setProfile(response.data);
@@ -41,7 +42,7 @@ const Home = () => {
 
     const fetchPosts = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/posts', {
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/posts`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
             setPosts(response.data);
@@ -58,7 +59,7 @@ const Home = () => {
                 profilePic: updatedProfilePic,
             };
 
-            const response = await axios.put('http://localhost:5000/api/profile/update', updatedProfile, {
+            const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/profile/update`, updatedProfile, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
 
@@ -79,7 +80,7 @@ const Home = () => {
 
         const postData = { caption: newPostText, image: newPostImage };
         try {
-            const response = await axios.post('http://localhost:5000/api/posts/create', postData, {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/posts/create`, postData, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
 
@@ -95,7 +96,7 @@ const Home = () => {
     const handleUpdatePost = async (postId, newText) => {
         try {
             await axios.put(
-                `http://localhost:5000/api/posts/${postId}`,
+                `${process.env.REACT_APP_BACKEND_URL}/api/posts/${postId}`,
                 { caption: newText },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
@@ -107,7 +108,7 @@ const Home = () => {
 
     const handleDeletePost = async (postId) => {
         try {
-            await axios.delete(`http://localhost:5000/api/posts/${postId}`, {
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/posts/${postId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
             setPosts(posts.filter((post) => post._id !== postId));
