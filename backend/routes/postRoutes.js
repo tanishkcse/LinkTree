@@ -29,13 +29,14 @@ router.post('/create', authMiddleware, async (req, res) => {
 
 router.get('/', authMiddleware, async (req, res) => {
     try {
-        const posts = await Post.find().sort({ createdAt: -1 });
+        const posts = await Post.find({ user: req.user.id })
+        .sort({ createdAt: -1 });
 
         res.json(posts);
         console.log(posts)
     } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch posts' });
-    }
+        res.status(500).json({ error: 'Failed to fetch posts' });
+    }
 });
 
 // Get a Single Post by ID

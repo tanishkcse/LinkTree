@@ -11,7 +11,7 @@ const app = express();
 
 // ✅ Configure CORS Properly
 const corsOptions = {
-    origin: "https://link-tree-ebon.vercel.app", // Allow only frontend
+    origin: ["https://link-tree-ebon.vercel.app", "http://localhost:3000"], // Allow both frontend and local development
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']

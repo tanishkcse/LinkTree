@@ -49,6 +49,7 @@ const Register = () => {
       );
     }
   };
+
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
       <div className="card p-4 shadow-lg" style={{ width: "350px" }}>

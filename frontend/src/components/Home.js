@@ -48,6 +48,26 @@ const Home = () => {
         }
     };
 
+    const handleUpdateProfile = async () => {
+        try {
+            const updatedProfile = {
+                username: updatedUsername,
+                bio: updatedBio,
+                profilePic: updatedProfilePic,
+            };
+
+            const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/profile/update`, updatedProfile, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+            });
+
+            setProfile(response.data.user);
+            setEditMode(false);
+        } catch (err) {
+            console.error('Error updating profile', err);
+            alert('Failed to update profile, please try again.');
+        }
+    };
+
     const handleCreatePost = async (e) => {
         e.preventDefault();
         if (!newPostText || !newPostImage) {
@@ -102,7 +122,16 @@ const Home = () => {
 
     // ✅ Function to check if caption is a valid URL
     const isValidURL = (str) => {
-        return /^(https?:\/\/|www\.)\S+$/.test(str);
+        const pattern = new RegExp(
+            "^(https?:\\/\\/)?" + // protocol
+            "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" + // domain name
+            "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+            "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+            "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+            "(\\#[-a-z\\d_]*)?$",
+            "i"
+        ); // fragment locator
+        return !!pattern.test(str);
     };
 
     return (
@@ -112,17 +141,80 @@ const Home = () => {
                 {isLoggedIn ? (
                     <>
                         <div className="mb-4">
+                            <h3>User Profile</h3>
+                            <div className="card p-3">
+                                <img
+                                    src={profile.profilePic}
+                                    alt="Profile"
+                                    className="rounded-circle border border-3 border-primary shadow-lg"
+                                    style={{ width: '120px', height: '120px', objectFit: 'cover' }}
+                                />
+                                <h4>{profile.username}</h4>
+                                <p>{profile.bio}</p>
+                                <button
+                                    className="btn btn-warning mt-2"
+                                    onClick={() => {
+                                        setEditMode(true);
+                                        setUpdatedUsername(profile.username);
+                                        setUpdatedBio(profile.bio);
+                                        setUpdatedProfilePic(profile.profilePic);
+                                    }}
+                                >
+                                    Edit Profile
+                                </button>
+                            </div>
+                        </div>
+
+                        {editMode && (
+                            <div className="card p-3 mt-3">
+                                <h3>Edit Profile</h3>
+                                <div className="form-group">
+                                    <label>Username</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={updatedUsername}
+                                        onChange={(e) => setUpdatedUsername(e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group mt-2">
+                                    <label>Bio</label>
+                                    <textarea
+                                        className="form-control"
+                                        value={updatedBio}
+                                        onChange={(e) => setUpdatedBio(e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group mt-2">
+                                    <label>Profile Picture URL</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={updatedProfilePic}
+                                        onChange={(e) => setUpdatedProfilePic(e.target.value)}
+                                    />
+                                </div>
+                                <button className="btn btn-success mt-3" onClick={handleUpdateProfile}>
+                                    Save Changes
+                                </button>
+                                <button className="btn btn-secondary mt-3 ms-2" onClick={() => setEditMode(false)}>
+                                    Cancel
+                                </button>
+                            </div>
+                        )}
+
+                        <div className="mb-4">
                             <h3>Create a New Post</h3>
                             <form onSubmit={handleCreatePost}>
                                 {error && <div className="alert alert-danger">{error}</div>}
                                 <div className="form-group">
-                                    <label>Post Caption</label>
+                                    <label>Post Text</label>
                                     <input
                                         type="text"
                                         className="form-control"
                                         value={newPostText}
                                         onChange={(e) => setNewPostText(e.target.value)}
-                                        placeholder="Enter caption or URL"
+                                        placeholder="What's on your mind?"
                                     />
                                 </div>
                                 <div className="form-group mt-2">
@@ -150,7 +242,6 @@ const Home = () => {
                                     posts.map((post) => (
                                         <div key={post._id} className="card mb-3">
                                             <div className="card-body">
-                                                {/* ✅ Caption is a clickable URL only if valid */}
                                                 <h5>
                                                     {isValidURL(post.caption) ? (
                                                         <a href={post.caption} target="_blank" rel="noopener noreferrer">
@@ -160,9 +251,12 @@ const Home = () => {
                                                         post.caption
                                                     )}
                                                 </h5>
-
-                                                <img src={post.image} alt="Post" className="img-fluid" />
-
+                                                <img
+                                                    src={post.image}
+                                                    alt="Post"
+                                                    className="img-fluid"
+                                                    style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'cover' }}
+                                                />
                                                 {post.user === profile._id && (
                                                     <div className="d-flex justify-content-between mt-3">
                                                         <button
@@ -199,3 +293,7 @@ const Home = () => {
 };
 
 export default Home;
+
+
+
+
