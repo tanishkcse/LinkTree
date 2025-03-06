@@ -9,22 +9,25 @@ dotenv.config();
 
 const app = express();
 
-// const corsOptions = {
-//     origin: process.env.CORS_ORIGIN,
-//     credentials: true,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     allowedHeaders: ['Content-Type', 'Authorization'],
-// };
-app.use(cors());
+// ✅ Configure CORS Properly
+const corsOptions = {
+    origin: "https://link-tree-ebon.vercel.app", // Allow only frontend
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle Preflight Requests
 
 app.use(bodyParser.json());
-app.use(morgan());
+app.use(morgan("dev"));
 
-
+// ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.log('MongoDB Connection Error:', err));
 
+// ✅ Import Routes
 const authRoutes = require('./routes/authRoutes');
 const postRoutes = require('./routes/postRoutes');
 const profileRoutes = require('./routes/profileRoutes');
@@ -33,7 +36,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/profile', profileRoutes); 
 
-
+// ✅ Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
