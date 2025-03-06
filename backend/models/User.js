@@ -1,13 +1,17 @@
-
-
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    profilePic: { type: String, default: '' }, // Profile picture URL
-    bio: { type: String, default: '' }, // Short bio
+    profilePic: { type: String },
+    bio: { type: String },
+    links: [
+        {
+            title: { type: String, required: true },
+            url: { type: String, required: true },
+        },
+    ],
 }, { timestamps: true }); // Automatically adds createdAt & updatedAt
 
 // Hash password before saving

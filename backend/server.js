@@ -31,10 +31,12 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 const authRoutes = require('./routes/authRoutes');
 const postRoutes = require('./routes/postRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const linkRoutes = require('./routes/linkRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
-app.use('/api/profile', profileRoutes); 
+app.use('/api/profile', profileRoutes);
+app.use('/api/links', linkRoutes);
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;

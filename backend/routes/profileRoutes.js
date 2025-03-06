@@ -14,7 +14,6 @@ router.get('/', authMiddleware,async (req, res) => {
     }
 });
 
-
 router.put('/', authMiddleware, async (req, res) => {
     try {
         const { profilePic, bio } = req.body;
@@ -51,6 +50,20 @@ router.put('/update', authMiddleware, async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Failed to update profile" });
+    }
+});
+
+// Get public profile by username
+router.get('/user/:username', async (req, res) => {
+    try {
+        const user = await User.findOne({ username: req.params.username }).select('-password');
+        if (user) {
+            res.status(200).json(user);
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch profile' });
     }
 });
 
